@@ -2,9 +2,7 @@ package deme.ahmadou.securedoc.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -15,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor @NoArgsConstructor
 @Builder @ToString
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class User extends Auditable{
+public class UserEntity extends Auditable{
 
     /* Account information */
     @Column(updatable = false, unique = true, nullable = false)
@@ -45,7 +43,12 @@ public class User extends Auditable{
     @Column(columnDefinition = "TEXT")
     private String qrCodeImageUrl;
 
-
-
+    @ManyToOne
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
+    private RoleEntity role;
 
 }
