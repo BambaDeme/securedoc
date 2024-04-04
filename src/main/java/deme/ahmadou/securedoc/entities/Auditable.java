@@ -1,6 +1,7 @@
 package deme.ahmadou.securedoc.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import deme.ahmadou.securedoc.domains.RequestContext;
 import deme.ahmadou.securedoc.exceptions.ApiException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -44,7 +45,7 @@ public abstract class Auditable {
 
     @PrePersist
     public void beforePersist(){
-        var userId=1L;
+        var userId= RequestContext.getUserId();
         if(userId == null){
             throw new ApiException("Cannot persist entity without user ID in request context for this thread");
         }
@@ -56,7 +57,7 @@ public abstract class Auditable {
 
     @PreUpdate
     public void beforeUpdate(){
-        var userId=1L;
+        var userId= RequestContext.getUserId();
         if(userId == null){
             throw new ApiException("Cannot persist entity without user ID in request context for this thread");
         }
