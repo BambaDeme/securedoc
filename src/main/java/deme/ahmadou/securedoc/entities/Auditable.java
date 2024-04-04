@@ -1,9 +1,11 @@
 package deme.ahmadou.securedoc.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import deme.ahmadou.securedoc.exceptions.ApiException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.util.AlternativeJdkIdGenerator;
@@ -12,6 +14,7 @@ import org.springframework.util.AlternativeJdkIdGenerator;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @MappedSuperclass
 @JsonIgnoreProperties(value = {"createdAt", "updatedAt"}, allowGetters = true)
 @EntityListeners(AuditingEntityListener.class)
@@ -38,4 +41,26 @@ public abstract class Auditable {
     @CreatedDate
     @Column(name = "updated_at", nullable = false, updatable = true)
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void beforePersist(){
+        var userId=1L;
+        if(userId == null){
+            throw new ApiException("Cannot persist entity without user ID in request context for this thread");
+        }
+        setCreatedBy(userId);
+        setUpdatedBy(userId);
+        setCreatedAt(LocalDateTime.now());
+        setUpdatedAt(LocalDateTime.now());
+    }
+
+    @PreUpdate
+    public void beforeUpdate(){
+        var userId=1L;
+        if(userId == null){
+            throw new ApiException("Cannot persist entity without user ID in request context for this thread");
+        }
+        setUpdatedBy(userId);
+        setUpdatedAt(LocalDateTime.now());
+    }
 }
